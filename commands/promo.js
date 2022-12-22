@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { SlashCommandBuilder } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 
@@ -8,20 +9,20 @@ const pluginStealth = require('puppeteer-extra-plugin-stealth');
 // require executablePath from puppeteer
 const {executablePath} = require('puppeteer');
 
-// Generating filenames
+// For generating filenames for the screenshots
 const crypto = require("crypto");
 
 module.exports = {
     data: new SlashCommandBuilder()
 		.setName('promo')
 		.setDescription('Gera um anuncio')
-        .addStringOption(option => option
+        .addStringOption(option => option // Makes it possible to receive the link with the slash command
                          .setName('link')
                          .setDescription('Link do bagulho')
                          .setRequired(true)),
 	async execute(interaction) {
         
-        console.log(`${interaction.user.username} usou /promo`);
+        console.log(`${interaction.user.username} usou /promo`); // logging purposes
         
         await interaction.deferReply({ ephemeral: true });
         
@@ -44,10 +45,15 @@ module.exports = {
                 .setTimestamp()
                 .setFooter({ text: interaction.user.username });
 
-            const channel = interaction.guild.channels.cache.get('1007451500173328494');
-            //const channel = interaction.channel;
-            await channel.send('<@&1006723058935005294>').catch(console.error);
-            await channel.send({ embeds: [resposta] }).catch(console.error);
+            
+            // Specifies the channel where the bot should send the embed message (channel ID)
+            const target = '1007451500173328494';
+            
+            const channel = interaction.guild.channels.cache.get(target);
+            //const channel = interaction.channel; // uncomment this line if you want the bot to send the resulting message in your current channel
+            
+            await channel.send('<@&1006723058935005294>').catch(console.error); // this tags a specific role
+            await channel.send({ embeds: [resposta] }).catch(console.error); // sends the embed message
 
             
         }
@@ -55,7 +61,7 @@ module.exports = {
 	},
 };
 
-// Acessa o link e retorna o print
+// Uses puppeteer to access the link and generate a screenshot
 async function loadPage(link) {
     const imagem = crypto.randomBytes(8).toString('hex') + '.png';
     var content = '';
@@ -89,7 +95,7 @@ async function loadPage(link) {
 
         await page.waitForTimeout(1501);
 
-        await page.screenshot({path: '/home/afonso/www/knu.do/promobot/' + imagem});
+        await page.screenshot({path: process.env.IMAGES_FOLDER + imagem});
         
         content = await page.content();
 
@@ -114,5 +120,9 @@ async function loadPage(link) {
         price = '----';
     }
     
-    return { error: false, url: 'https://knu.do/promobot/' + imagem, title: title.substring(0, 255), price: price };
+    
+    // I'm using another server to serve the images, you can change this base url to your server or even serve the images with node i.e. using express
+    
+    const baseserver = 'https://knu.do/promobot/'
+    return { error: false, url: baseserver + imagem, title: title.substring(0, 255), price: price };
 }

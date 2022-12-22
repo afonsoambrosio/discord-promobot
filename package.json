@@ -1,7 +1,7 @@
 {
-  "name": "promo",
+  "name": "promobot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Gets the url of an ecommerce listing and sends an \"embed\" type message with info on the listing.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
