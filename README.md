@@ -13,6 +13,13 @@ to get all the dependencies installed.
 
 Some files like `commands/promo.js` require some setting like the base url of the server (you need that for the webserver), so make sure you fill it with your propperly set domain/ip address.
 
+You will also need to create a .env file with the following
+
+```bash
+DISCORD_TOKEN=<your discord aplication token>
+DISCORD_CLIENTID=<your discord bot cliend id>
+```
+
 ## Usage
 
 You need to run the following once the project is installed and everytime you add a new /slash command.
@@ -24,6 +31,8 @@ Run the following to start the bot.
 ```bash
 node index.js
 ```
+
+By default, the screenshots will be saved on the `public/ss` folder, accessible from `http://<your ip/domain>:<port>/ss/<image file>`.
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
