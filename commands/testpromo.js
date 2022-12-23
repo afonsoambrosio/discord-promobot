@@ -15,7 +15,7 @@ const crypto = require("crypto");
 
 module.exports = {
     data: new SlashCommandBuilder()
-		.setName('promo')
+		.setName('testpromo')
 		.setDescription('Gera um anuncio em modo teste')
         .addStringOption(option => option // Makes it possible to receive the link with the slash command
                          .setName('link')
@@ -23,7 +23,7 @@ module.exports = {
                          .setRequired(true)),
 	async execute(interaction) {
         
-        console.log(`${interaction.user.username} used /promo`); // logging purposes
+        console.log(`${interaction.user.username} used /testpromo`); // logging purposes
         
         await interaction.deferReply({ ephemeral: true });
         
@@ -53,13 +53,13 @@ module.exports = {
             const target = '1007451500173328494';
             
             // uncomment this line if you want the bot to send the resulting message in a target channel
-            const channel = interaction.guild.channels.cache.get(target);
+            //const channel = interaction.guild.channels.cache.get(target);
             
             // uncomment this line if you want the bot to send the resulting message in your current channel
-            //const channel = interaction.channel; 
+            const channel = interaction.channel; 
             
             // this pings a specific role (use the role's ID)
-            await channel.send('<@&1006723058935005294>').catch(console.error); 
+            //await channel.send('<@&1006723058935005294>').catch(console.error); 
             
             // sends the embed message
             await channel.send({ embeds: [resposta] }).catch(console.error);

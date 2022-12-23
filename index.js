@@ -2,6 +2,11 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 
+// Web server
+const express = require('express');
+const app = express();
+const port = 8880;
+
 // Discord
 // Require the necessary discord.js classes
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
@@ -54,3 +59,14 @@ client.once(Events.ClientReady, c => {
 
 // Log in to Discord with your client's token
 client.login(token);
+
+
+// Web server section
+// Used for hosting the obtained screenshots
+
+
+app.use(express.static(__dirname + '/public'));
+
+app.listen(port, () => {
+  console.log(`Webserver running on port ${port}`)
+})
