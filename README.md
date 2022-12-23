@@ -20,23 +20,26 @@ DISCORD_TOKEN=<your discord aplication token>
 DISCORD_CLIENTID=<your discord bot cliend id>
 ```
 
-## Usage
-
 You need to run the following once the project is installed and everytime you add a new /slash command.
 ```bash
 node deploy-commands.js
-```
 
+```
 Run the following to start the bot.
 ```bash
 node index.js
 ```
 
-By default, the screenshots will be saved on the `public/ss` folder, accessible from `http://<your ip/domain>:<port>/ss/<image file>`.
-Example
+By default, the screenshots will be saved on the `public/ss` folder, accessible from `http://<your ip/domain>:<port>/ss/<image file>`. Example:
 ```
 http://localhost:8880/ss/f17076a99fcd2532.png
 ```
+
+## Usage
+
+*/promo link:<url>*: Sends an embed message with a screenshot of the page and some info on the listing.
+
+
 
 ## Contributing
 
