@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { SlashCommandBuilder } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
 
@@ -22,13 +21,15 @@ module.exports = {
                          .setRequired(true)),
 	async execute(interaction) {
         
-        console.log(`${interaction.user.username} usou /promo`); // logging purposes
+        console.log(`${interaction.user.username} used /promo`); // logging purposes
         
         await interaction.deferReply({ ephemeral: true });
         
         const link = interaction.options.getString('link');
         
         const page = await loadPage(link);
+        
+        console.log(` > Generated ${page.url}`);
         
         if(page.error){
             await interaction.editReply({content: 'deu ruim aqui, verifica se o link ta correto :c' });
@@ -52,8 +53,11 @@ module.exports = {
             const channel = interaction.guild.channels.cache.get(target);
             //const channel = interaction.channel; // uncomment this line if you want the bot to send the resulting message in your current channel
             
-            await channel.send('<@&1006723058935005294>').catch(console.error); // this tags a specific role
-            await channel.send({ embeds: [resposta] }).catch(console.error); // sends the embed message
+            // this pings a specific role (use the role's ID)
+            await channel.send('<@&1006723058935005294>').catch(console.error); 
+            
+            // sends the embed message
+            await channel.send({ embeds: [resposta] }).catch(console.error);
 
             
         }
@@ -63,8 +67,13 @@ module.exports = {
 
 // Uses puppeteer to access the link and generate a screenshot
 async function loadPage(link) {
-    const imagem = crypto.randomBytes(8).toString('hex') + '.png';
-    var content = '';
+    
+    // where to store the file
+    const image_path = '<relative or absolute path to your images folder>';
+    
+    // generates random name
+    const image_name = crypto.randomBytes(8).toString('hex') + '.png';
+    var html_content = '';
     
     const args = [
         '--no-sandbox',
@@ -93,11 +102,11 @@ async function loadPage(link) {
 
         await page.goto(link);
 
-        await page.waitForTimeout(1501);
+        await page.waitForTimeout(1299);
 
-        await page.screenshot({path: process.env.IMAGES_FOLDER + imagem});
+        await page.screenshot({ path: image_path + image_name });
         
-        content = await page.content();
+        html_content = await page.content();
 
         await browser.close();
     } catch (e) {
@@ -105,8 +114,8 @@ async function loadPage(link) {
         return { error: true, img: '' };
     }
     
-    var title = content.match('<title>(.*?)<\/title>');
-    var price = content.match('"price": *"(.*?)",');
+    var title = html_content.match('<title>(.*?)<\/title>');
+    var price = html_content.match('"price": *"(.*?)",');
     
     if(title){
         title = title[1];
@@ -123,6 +132,6 @@ async function loadPage(link) {
     
     // I'm using another server to serve the images, you can change this base url to your server or even serve the images with node i.e. using express
     
-    const baseserver = 'https://knu.do/promobot/'
-    return { error: false, url: baseserver + imagem, title: title.substring(0, 255), price: price };
+    const image = `https://knu.do/promobot/${image_name}`;
+    return { error: false, url: image, title: title.substring(0, 255), price: price };
 }

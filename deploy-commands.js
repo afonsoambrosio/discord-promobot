@@ -1,3 +1,6 @@
+// This fime must be run once so the slash commands are available on the server
+// run it with "node deploy-commands.js"
+
 require('dotenv').config();
 const { REST, Routes } = require('discord.js');
 const fs = require('node:fs');
