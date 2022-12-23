@@ -33,6 +33,11 @@ node index.js
 ```
 
 By default, the screenshots will be saved on the `public/ss` folder, accessible from `http://<your ip/domain>:<port>/ss/<image file>`.
+Example
+```
+http://localhost:8880/ss/f17076a99fcd2532.png
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first
