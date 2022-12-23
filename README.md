@@ -37,7 +37,8 @@ http://localhost:8880/ss/f17076a99fcd2532.png
 
 ## Usage
 
-*/promo link:<url>*: Sends an embed message with a screenshot of the page and some info on the listing.
+```/promo link:<url>```
+Sends an embed message with a screenshot of the page and some info on the listing.
 
 
 
