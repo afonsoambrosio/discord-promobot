@@ -16,7 +16,7 @@ const crypto = require("crypto");
 module.exports = {
     data: new SlashCommandBuilder()
 		.setName('promo')
-		.setDescription('Gera um anuncio em modo teste')
+		.setDescription('Gera um anuncio com ping')
         .addStringOption(option => option // Makes it possible to receive the link with the slash command
                          .setName('link')
                          .setDescription('Link do bagulho')
@@ -43,10 +43,13 @@ module.exports = {
                 .setColor(0xe309a2)
                 .setTitle(page.title)
                 .setURL(link)
-                .addFields({ name: 'Preço *`beta`*', value: `**${page.price}**` })
+                .addFields(
+                    { name: 'Moeda *`beta`*', value: `**${page.currency}**`, inline: true },
+                    { name: 'Preço *`beta`*', value: `**${page.price}**`, inline: true }
+                )
                 .setImage(page.url)
                 .setTimestamp()
-                .setFooter({ text: interaction.user.username });
+                .setFooter({ text: `enviado por ${interaction.user.username}` });
 
             
             // Specifies the channel where the bot should send the embed message (channel ID)
@@ -119,24 +122,20 @@ async function loadPage(link) {
         return { error: true, img: '' };
     }
     
-    var title = html_content.match('<title>(.*?)<\/title>');
-    var price = html_content.match('"price": *"(.*?)",');
+    var title = html_content.match(/<title>(.*?)<\/title>/i);
+    var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*,|"priceAmount":( )*(")?(.*?)(")?( )*,/i);
+    var currency = html_content.match(/"priceCurrency":( )*"(.*?)",|"currencySymbol":( )*"(.*?)",/i);
     
-    if(title){
-        title = title[1];
-    }else{
-        title = link;
-    }
     
-    if(price){
-        price = price[1];
-    }else{
-        price = '----';
-    }
+    title = title[1] || link;
+    
+    price = price[3] || price[8] || '0.00';
+    
+    currency = currency[2] || currency[4] || '---';
     
     
     // I'm using another server to serve the images, you can change this base url to your server or even serve the images with node i.e. using express
     
     const image = `http://knu.do:8880/ss/${image_name}`;
-    return { error: false, url: image, title: title.substring(0, 255), price: price };
+    return { error: false, url: image, title: title.substring(0, 255), price: price, currency: currency };
 }
