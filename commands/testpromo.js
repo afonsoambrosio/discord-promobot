@@ -1,4 +1,5 @@
 // For testing purposes, this command does the same as promo.js without pinging users and sends the result in your current channel
+require('dotenv').config();
 
 const { SlashCommandBuilder } = require('discord.js');
 const { EmbedBuilder } = require('discord.js');
@@ -74,7 +75,7 @@ module.exports = {
 async function loadPage(link) {
     
     // where to store the file
-    const image_path = 'public/ss/';
+    const image_path = 'public/';
     
     // generates random name
     const image_name = crypto.randomBytes(8).toString('hex') + '.png';
@@ -133,8 +134,9 @@ async function loadPage(link) {
     currency = ( currency && (currency[2] || currency[4]) ? (currency[2] || currency[4]) : '' );
     
     
-    // I'm using another server to serve the images, you can change this base url to your server or even serve the images with node i.e. using express
+    // The screenshot will be saved unter your app's foder on the "public" directory and will be available on http://localhost:3000 (you can change the port on index.js)
+    // The embed message requires a valid url to the image file.
     
-    const image = `https://promobot.knu.do/ss/${image_name}`;
+    const image = process.env.PUBLIC_URL + image_name;
     return { error: false, url: image, title: title.substring(0, 255), price: price, currency: currency };
 }

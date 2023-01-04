@@ -18,8 +18,10 @@ Some files like `commands/promo.js` require some setting like the base url of th
 You will also need to create a .env file with the following
 
 ```bash
+PORT=<the port where you intend to serve the screenshot images [defaults to 3000]>
 DISCORD_TOKEN=<your discord aplication token>
 DISCORD_CLIENTID=<your discord bot cliend id>
+PUBLIC_URL=http://localhost:3000/ [change this once you have a public ip or domain]
 ```
 
 You need to run the following once the project is installed and everytime you add a new /slash command.
