@@ -4,6 +4,8 @@ Gets the url of an ecommerce listing and sends an "embed" type message with info
 
 ## Installation
 
+First you need to make sure you have headless chrome installed in your enviroment.
+
 After installing nodejs and npm, on the project folder run:
 
 ```bash

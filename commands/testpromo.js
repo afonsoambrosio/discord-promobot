@@ -43,10 +43,7 @@ module.exports = {
                 .setColor(0xe309a2)
                 .setTitle(`[TESTE] ${page.title}`)
                 .setURL(link)
-                .addFields(
-                    { name: 'Moeda *`beta`*', value: `**${page.currency}**`, inline: true },
-                    { name: 'Preço *`beta`*', value: `**${page.price}**`, inline: true }
-                )
+                .addFields({ name: 'Preço *`beta`*', value: `**${page.currency} ${page.price}**` })
                 .setImage(page.url)
                 .setTimestamp()
                 .setFooter({ text: `enviado por ${interaction.user.username}` });
@@ -122,20 +119,22 @@ async function loadPage(link) {
         return { error: true, img: '' };
     }
     
-    var title = html_content.match(/<title>(.*?)<\/title>/i);
+    // regex to catch the page tittle (it usually has the name of the product)
+    var title = html_content.match(/<title>(.*?)<\/title>/si);
+    
+    // regex to get currency and price
     var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*,|"priceAmount":( )*(")?(.*?)(")?( )*,/i);
     var currency = html_content.match(/"priceCurrency":( )*"(.*?)",|"currencySymbol":( )*"(.*?)",/i);
     
+    title = ( title && title[1] ? title[1] : link );
     
-    title = title[1] || link;
+    price = ( price && (price[3] || price[8]) ? (price[3] || price[8]) : '0.00' ) ;
     
-    price = price[3] || price[8] || '0.00';
-    
-    currency = currency[2] || currency[4] || '---';
+    currency = ( currency && (currency[2] || currency[4]) ? (currency[2] || currency[4]) : '' );
     
     
     // I'm using another server to serve the images, you can change this base url to your server or even serve the images with node i.e. using express
     
-    const image = `http://knu.do:8880/ss/${image_name}`;
+    const image = `https://promobot.knu.do/ss/${image_name}`;
     return { error: false, url: image, title: title.substring(0, 255), price: price, currency: currency };
 }

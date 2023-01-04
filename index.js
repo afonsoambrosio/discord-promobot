@@ -5,7 +5,7 @@ const path = require('node:path');
 // Web server
 const express = require('express');
 const app = express();
-const port = 8880;
+const port = 3000;
 
 // Discord
 // Require the necessary discord.js classes
