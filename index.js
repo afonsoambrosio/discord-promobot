@@ -2,15 +2,18 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 
+
 // Web server
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 // Discord
 // Require the necessary discord.js classes
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
 const token = process.env.DISCORD_TOKEN;
+
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -53,12 +56,15 @@ client.on(Events.InteractionCreate, async interaction => {
 
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
-client.once(Events.ClientReady, c => {
-        console.log(`Ready! Logged in as ${c.user.tag}`);
+client.once(Events.ClientReady, async c => {
+    
+    console.log(`Ready! Logged in as ${c.user.tag}`);
+    
 });
 
 // Log in to Discord with your client's token
 client.login(token);
+
 
 
 // Web server section
@@ -69,4 +75,4 @@ app.use(express.static(__dirname + '/public'));
 
 app.listen(port, () => {
   console.log(`Webserver running on port ${port}`)
-})
+});

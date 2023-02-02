@@ -39,27 +39,31 @@ module.exports = {
             
             await interaction.editReply({content: 'calmaê que ja vai' });
 
-            const resposta = new EmbedBuilder()
+            var resposta = new EmbedBuilder()
                 .setColor(0xe309a2)
-                .setTitle(page.title)
+                .setTitle(page.title || link)
                 .setURL(link)
-                .addFields({ name: 'Preço *`beta`*', value: `**${page.currency} ${page.price}**` })
                 .setImage(page.url)
                 .setTimestamp()
                 .setFooter({ text: `enviado por ${interaction.user.username}` });
 
             
+            if(page.price){
+                resposta.addFields({ name: 'Preço', value: `**${page.currency} ${page.price}**` });
+            }
+            
+            
             // Specifies the channel where the bot should send the embed message (channel ID)
-            const target = '1007451500173328494';
+            //const target = '1007451500173328494';
             
             // uncomment this line if you want the bot to send the resulting message in a target channel
-            const channel = interaction.guild.channels.cache.get(target);
+            //const channel = interaction.guild.channels.cache.get(target);
             
             // uncomment this line if you want the bot to send the resulting message in your current channel
-            //const channel = interaction.channel; 
+            const channel = interaction.channel;
             
             // this pings a specific role (use the role's ID)
-            await channel.send('<@&1006723058935005294>').catch(console.error); 
+            await channel.send('<@&1006723058935005294>').catch(console.error);
             
             // sends the embed message
             await channel.send({ embeds: [resposta] }).catch(console.error);
@@ -87,15 +91,18 @@ async function loadPage(link) {
         '--window-position=0,0',
         '--ignore-certifcate-errors',
         '--ignore-certifcate-errors-spki-list',
-        `--window-size=1280,960`
+        '--window-size=1280,960',
+        '--use-gl=egl'
     ];
 
     puppeteerExtra.use(pluginStealth());
+    
+    //console.log('launches browser');
     const browser = await puppeteerExtra.launch({
         args: args,
         defaultViewport: {
-            width:1280,
-            height:960
+            width: 1280,
+            height: 960
         },
         headless: true,
         ignoreHTTPSErrors: true,
@@ -104,16 +111,22 @@ async function loadPage(link) {
     
     try{
         const page = await browser.newPage();
-
-        await page.goto(link);
-
-        await page.waitForTimeout(1299);
-
+        
+        //console.log('go to url');
+        await page.goto( link, { waitUntil: 'domcontentloaded', timeout: 10000 } );
+        
+        //console.log('waits');
+        await page.waitForTimeout(6000);
+        
+        //console.log('takes screenshot');
         await page.screenshot({ path: image_path + image_name });
         
+        //console.log('extract html');
         html_content = await page.content();
-
+        
+        //console.log('closes browser');
         await browser.close();
+        
     } catch (e) {
         console.log('deu ruim: ', e);
         return { error: true, img: '' };
@@ -123,12 +136,12 @@ async function loadPage(link) {
     var title = html_content.match(/<title>(.*?)<\/title>/si);
     
     // regex to get currency and price
-    var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*,|"priceAmount":( )*(")?(.*?)(")?( )*,/i);
+    var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*(,|})|"priceAmount":( )*(")?(.*?)(")?( )*(,|})/i);
     var currency = html_content.match(/"priceCurrency":( )*"(.*?)",|"currencySymbol":( )*"(.*?)",/i);
     
-    title = ( title && title[1] ? title[1] : link );
+    title = ( title && title[1] ? title[1] : null );
     
-    price = ( price && (price[3] || price[8]) ? (price[3] || price[8]) : '0.00' ) ;
+    price = ( price && (price[3] || price[9]) ? (price[3] || price[9]) : null ) ;
     
     currency = ( currency && (currency[2] || currency[4]) ? (currency[2] || currency[4]) : '' );
     
