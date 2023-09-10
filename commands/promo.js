@@ -21,7 +21,7 @@ module.exports = {
                          .setName('link')
                          .setDescription('Link do bagulho')
                          .setRequired(true)),
-	async execute(interaction) {
+	async execute(interaction, controller) {
         
         console.log(`${interaction.user.username} used /promo`); // logging purposes
         
@@ -45,11 +45,12 @@ module.exports = {
                 .setURL(link)
                 .setImage(page.url)
                 .setTimestamp()
-                .setFooter({ text: `enviado por ${interaction.user.username}` });
 
-            
             if(page.price){
-                resposta.addFields({ name: 'Preço', value: `**${page.currency} ${page.price}**` });
+                resposta.addFields(
+                    { name: 'Preço', value: `**${page.currency} ${page.price}**`, inline: true },
+                    { name: '** **', value: `Enviado por <@${interaction.user.id}> 💛`, inline: true },
+                );
             }
             
             
@@ -62,12 +63,11 @@ module.exports = {
             // uncomment this line if you want the bot to send the resulting message in your current channel
             const channel = interaction.channel;
             
-            // this pings a specific role (use the role's ID)
-            await channel.send('<@&1006723058935005294>').catch(console.error);
-            
             // sends the embed message
             await channel.send({ embeds: [resposta] }).catch(console.error);
-
+            
+            // pings a specific role (use the role's ID)
+            await channel.send('<@&1006723058935005294>').catch(console.error);
             
         }
         
@@ -113,7 +113,7 @@ async function loadPage(link) {
         const page = await browser.newPage();
         
         //console.log('go to url');
-        await page.goto( link, { waitUntil: 'domcontentloaded', timeout: 10000 } );
+        await page.goto( link, { waitUntil: 'domcontentloaded', timeout: 16000 } );
         
         //console.log('waits');
         await page.waitForTimeout(6000);
@@ -139,7 +139,7 @@ async function loadPage(link) {
     var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*(,|})|"priceAmount":( )*(")?(.*?)(")?( )*(,|})/i);
     var currency = html_content.match(/"priceCurrency":( )*"(.*?)",|"currencySymbol":( )*"(.*?)",/i);
     
-    title = ( title && title[1] ? title[1] : null );
+    title = ( title && title[1] ? title[1] : link );
     
     price = ( price && (price[3] || price[9]) ? (price[3] || price[9]) : null ) ;
     

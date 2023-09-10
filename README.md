@@ -34,9 +34,9 @@ Run the following to start the bot.
 node index.js
 ```
 
-By default, the screenshots will be saved on the `public/ss` folder, accessible from `http://<your ip/domain>:<port>/ss/<image file>`. Example:
+By default, the screenshots will be saved on the `public/` folder, accessible from `http://<your ip/domain>:<port>/<image file>`. Example:
 ```
-http://localhost:8880/ss/f17076a99fcd2532.png
+http://localhost:8880/f17076a99fcd2532.png
 ```
 
 ## Usage

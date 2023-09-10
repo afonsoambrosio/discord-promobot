@@ -17,12 +17,12 @@ const crypto = require("crypto");
 module.exports = {
     data: new SlashCommandBuilder()
 		.setName('testpromo')
-		.setDescription('Gera um anuncio em modo teste')
+		.setDescription('Gera um anuncio em modo teste sem ping')
         .addStringOption(option => option // Makes it possible to receive the link with the slash command
                          .setName('link')
-                         .setDescription('Link do bagulho')
+                         .setDescription('Link do anuncio')
                          .setRequired(true)),
-	async execute(interaction) {
+	async execute(interaction, controller) {
         
         console.log(`${interaction.user.username} used /testpromo`); // logging purposes
         
@@ -35,10 +35,10 @@ module.exports = {
         console.log(` > Generated ${page.url}`);
         
         if(page.error){
-            await interaction.editReply({content: 'deu ruim aqui, verifica se o link ta correto :c' });
+            await interaction.editReply({content: 'Deu erro aqui, verifica o link e tenta novamente.' });
         }else{
             
-            await interaction.editReply({content: 'calmaê que ja vai' });
+            await interaction.editReply({content: 'Tudo certo por aqui, em instantes envio o link.' });
 
             var resposta = new EmbedBuilder()
                 .setColor(0xe309a2)
@@ -46,11 +46,12 @@ module.exports = {
                 .setURL(link)
                 .setImage(page.url)
                 .setTimestamp()
-                .setFooter({ text: `enviado por ${interaction.user.username}` });
-            
             
             if(page.price){
-                resposta.addFields({ name: 'Preço', value: `**${page.currency} ${page.price}**` });
+                resposta.addFields(
+                    { name: 'Preço', value: `**${page.currency} ${page.price}** [histórico](https://promobot.knu.do/produto/id)`, inline: true },
+                    { name: '** **', value: `Enviado por <@${interaction.user.id}> 💛`, inline: true },
+                );
             }
             
             // Specifies the channel where the bot should send the embed message (channel ID)
@@ -62,12 +63,11 @@ module.exports = {
             // uncomment this line if you want the bot to send the resulting message in your current channel
             const channel = interaction.channel; 
             
-            // this pings a specific role (use the role's ID)
-            //await channel.send('<@&1006723058935005294>').catch(console.error); 
-            
             // sends the embed message
             await channel.send({ embeds: [resposta] }).catch(console.error);
 
+            // this pings a specific role (use the role's ID)
+            //await channel.send('<@&1006723058935005294>').catch(console.error); 
             
         }
         
@@ -81,7 +81,7 @@ async function loadPage(link) {
     const image_path = 'public/';
     
     // generates random name
-    const image_name = crypto.randomBytes(8).toString('hex') + '.png';
+    const image_name = `img/${crypto.randomBytes(8).toString('hex')}.png`;
     var html_content = '';
     
     const args = [
@@ -94,6 +94,12 @@ async function loadPage(link) {
         '--window-size=1280,960',
         '--use-gl=egl'
     ];
+    
+    const refs = [
+      'https://www.google.com',
+      'https://www.facebook.com',
+      'https://www.instagram.com'
+    ];
 
     puppeteerExtra.use(pluginStealth());
     
@@ -104,7 +110,7 @@ async function loadPage(link) {
             width: 1280,
             height: 960
         },
-        headless: true,
+        headless: 'new',
         ignoreHTTPSErrors: true,
         executablePath: executablePath(),
     });
@@ -112,8 +118,11 @@ async function loadPage(link) {
     try{
         const page = await browser.newPage();
         
+        // sets a random referer
+        page.setExtraHTTPHeaders({ referer: refs[Math.floor(Math.random() * 3)] });
+        
         //console.log('go to url');
-        await page.goto( link, { waitUntil: 'domcontentloaded', timeout: 10000 } );
+        await page.goto( link, { waitUntil: 'domcontentloaded', timeout: 16000 } );
         
         //console.log('waits');
         await page.waitForTimeout(6000);
@@ -128,7 +137,7 @@ async function loadPage(link) {
         await browser.close();
         
     } catch (e) {
-        console.log('deu ruim: ', e);
+        console.log('error: ', e);
         return { error: true, img: '' };
     }
     
@@ -139,7 +148,7 @@ async function loadPage(link) {
     var price = html_content.match(/"price":( )*(")?(.*?)(")?( )*(,|})|"priceAmount":( )*(")?(.*?)(")?( )*(,|})/i);
     var currency = html_content.match(/"priceCurrency":( )*"(.*?)",|"currencySymbol":( )*"(.*?)",/i);
     
-    title = ( title && title[1] ? title[1] : null );
+    title = ( title && title[1] ? title[1] : link );
     
     price = ( price && (price[3] || price[9]) ? (price[3] || price[9]) : null ) ;
     

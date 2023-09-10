@@ -128,3 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+firebase_key.json
+public/*.png
+public/img/*.png
+public/ss/*.png

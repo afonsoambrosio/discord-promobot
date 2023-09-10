@@ -1,6 +1,11 @@
+// Enviroment settings
 require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
+
+
+// Firebase
+const { db } = require('./firebase');
 
 
 // Web server
@@ -69,9 +74,11 @@ client.login(token);
 
 // Web server section
 // Used for hosting the obtained screenshots
-
-
 app.use(express.static(__dirname + '/public'));
+
+//app.get('/', (req, res) => {
+//        res.status(200).send();
+//});
 
 app.listen(port, () => {
   console.log(`Webserver running on port ${port}`)
