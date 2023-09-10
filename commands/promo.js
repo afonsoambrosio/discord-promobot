@@ -34,10 +34,10 @@ module.exports = {
         console.log(` > Generated ${page.url}`);
         
         if(page.error){
-            await interaction.editReply({content: 'deu ruim aqui, verifica se o link ta correto :c' });
+            await interaction.editReply({content: 'Ocorreu um erro do meu lado, verifica se o link está correto :c' });
         }else{
             
-            await interaction.editReply({content: 'calmaê que ja vai' });
+            await interaction.editReply({content: 'Tudo certo por aqui, em instantes envio o anúncio.' });
 
             var resposta = new EmbedBuilder()
                 .setColor(0xe309a2)
@@ -85,6 +85,8 @@ async function loadPage(link) {
     var html_content = '';
     
     const args = [
+        '--disable-extensions-except=./extensions/idontcareaboutcookies/',
+        '--load-extension=./extensions/idontcareaboutcookies/',
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-infobars',

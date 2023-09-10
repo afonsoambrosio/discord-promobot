@@ -22,6 +22,7 @@ PORT=<the port where you intend to serve the screenshot images [defaults to 3000
 DISCORD_TOKEN=<your discord aplication token>
 DISCORD_CLIENTID=<your discord bot cliend id>
 PUBLIC_URL=http://localhost:3000/ [change this once you have a public ip or domain]
+FB_DB_URL=<your firebase realtimedatabase url>
 ```
 
 You need to run the following once the project is installed and everytime you add a new /slash command.
@@ -34,9 +35,9 @@ Run the following to start the bot.
 node index.js
 ```
 
-By default, the screenshots will be saved on the `public/` folder, accessible from `http://<your ip/domain>:<port>/<image file>`. Example:
+By default, the screenshots will be saved on the `public/img` folder, accessible from `http://<your ip/domain>:<port>/img/<image file>`. Example:
 ```
-http://localhost:8880/f17076a99fcd2532.png
+http://localhost:8880/img/f17076a99fcd2532.png
 ```
 
 ## Usage
