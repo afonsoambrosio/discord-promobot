@@ -22,7 +22,7 @@ module.exports = {
                          .setName('link')
                          .setDescription('Link do anuncio')
                          .setRequired(true)),
-	async execute(interaction, controller) {
+	async execute(interaction) {
         
         console.log(`${interaction.user.username} used /testpromo`); // logging purposes
         

@@ -1,7 +1,9 @@
 require('dotenv').config();
 
-const { SlashCommandBuilder } = require('discord.js');
-const { EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+
+// Firebase
+const controller = require('../controller.js');
 
 // Puppeteer
 const puppeteerExtra = require('puppeteer-extra');
@@ -21,11 +23,12 @@ module.exports = {
                          .setName('link')
                          .setDescription('Link do bagulho')
                          .setRequired(true)),
-	async execute(interaction, controller) {
-        
+	async execute(interaction) {
         console.log(`${interaction.user.username} used /promo`); // logging purposes
         
+        // retrieving settings from the guild
         await interaction.deferReply({ ephemeral: true });
+        const guildSettings = await controller.getSettings(interaction.guildId);
         
         const link = interaction.options.getString('link');
         
@@ -54,21 +57,26 @@ module.exports = {
             }
             
             
-            // Specifies the channel where the bot should send the embed message (channel ID)
-            //const target = '1007451500173328494';
+            // sending the embed on the current channel
+            let channel = interaction.channel; 
             
-            // uncomment this line if you want the bot to send the resulting message in a target channel
-            //const channel = interaction.guild.channels.cache.get(target);
-            
-            // uncomment this line if you want the bot to send the resulting message in your current channel
-            const channel = interaction.channel;
+            if('defaultChannel' in guildSettings){
+                // sending the embed on the predefined channel
+                channel = interaction.guild.channels.cache.get(guildSettings.defaultChannel);
+            }
             
             // sends the embed message
-            await channel.send({ embeds: [resposta] }).catch(console.error);
+            await channel.send({ embeds: [resposta] }).catch(error => {
+                console.error(error);
+                interaction.editReply({content: `Ocorreu um erro ao enviar o embed, verifique se eu tenho permissão para enviar mensagens no canal <#${channel.id}>` });
+            });
             
-            // pings a specific role (use the role's ID)
-            await channel.send('<@&1006723058935005294>').catch(console.error);
-            
+            // pings the role stored in firebase
+            if('ping' in guildSettings){
+                if(guildSettings.ping){
+                    await channel.send(`<@&${guildSettings.pingRole}>`).catch(console.error);
+                }
+            }
         }
         
 	},
@@ -106,7 +114,7 @@ async function loadPage(link) {
             width: 1280,
             height: 960
         },
-        headless: true,
+        headless: 'new',
         ignoreHTTPSErrors: true,
         executablePath: executablePath(),
     });

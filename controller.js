@@ -13,7 +13,18 @@ function setDefaultChannel(guild, channelId){
         defaultChannel: channelId,
       }
     });
-
 }
 
-module.exports = { setDefaultChannel };
+function updateSettings(guild, settings){
+    const guildConfigRef = ref.child('guilds/' + guild);
+
+    guildConfigRef.update(settings);
+}
+
+async function getSettings(guild){
+    const guildConfigRef = ref.child('guilds/' + guild);
+
+    return guildConfigRef.once('value').then(childsnapshot => childsnapshot.val());
+}
+
+module.exports = { setDefaultChannel, getSettings, updateSettings };

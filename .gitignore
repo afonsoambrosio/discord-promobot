@@ -130,6 +130,3 @@ dist
 .pnp.*
 
 firebase_key.json
-public/*.png
-public/img/*.png
-public/ss/*.png
